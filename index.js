@@ -1,4 +1,12 @@
 const { Client, GatewayIntentBits, EmbedBuilder, Partials } = require('discord.js');
+const http = require('http');
+
+// --- RENDER PORT BINDING FIX ---
+// This creates a tiny server so Render sees an "Open Port" and doesn't kill the bot.
+http.createServer((req, res) => {
+    res.write("Mythical Core is Online");
+    res.end();
+}).listen(10000); 
 
 const client = new Client({
     intents: [
@@ -8,15 +16,16 @@ const client = new Client({
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.DirectMessages 
     ],
-    // CRITICAL: Partials are required for the bot to see DMs and new members properly
     partials: [Partials.Channel, Partials.Message, Partials.User] 
 });
 
-const TOKEN = 'MTUwMTExODAyMTc5ODg1NDY3Ng.GLtRjl.eS9atXhmQnymnUHLhgbHO3nWDZPjfw5MAKAI7I';
+// IMPORTANT: Ensure your Token is set in the Render "Environment Variables" 
+// or replace process.env.TOKEN with your string safely.
+const TOKEN = process.env.TOKEN || 'MTUwMTExODAyMTc5ODg1NDY3Ng.GLtRjl.eS9atXhmQnymnUHLhgbHO3nWDZPjfw5MAKAI7I';
 
 client.once('ready', () => {
     console.log('✅ Mythical Core is now online and listening for doubts!');
-    client.user.setActivity('mythical.buzz', { type: 3 }); 
+    client.user.setActivity('play.vexsmp.online', { type: 3 }); 
 });
 
 // --- DM WELCOME FEATURE ---
@@ -27,7 +36,7 @@ client.on('guildMemberAdd', async (member) => {
             .setTitle('🔥 Successfully Joined Mythical Network!')
             .setDescription(`Hey ${member.user.username}, welcome to the family!`)
             .addFields(
-                { name: '🌐 Server IP', value: '`play.mythical.buzz`' },
+                { name: '🌐 Server IP', value: '`play.vexsmp.online`' },
                 { name: '📅 Launch Date', value: 'May 6th, 11:00 AM IST' },
                 { name: '🎁 Rewards', value: 'Type `!rewards` in the server to see what you can win!' }
             )
@@ -48,7 +57,7 @@ client.on('messageCreate', (message) => {
 
     // 1. IP Questions
     if (msg.includes('how to join') || msg.includes('ip') || msg.includes('address')) {
-        return message.reply('To join the Mythical Network, use the IP: `play.mythical.buzz`. If you are on Bedrock/Mobile, use the same IP with port `19132`!');
+        return message.reply('To join the Mythical Network, use the IP: `play.vexsmp.online`. If you are on Bedrock/Mobile, use the same IP with port `19132`!');
     }
 
     // 2. Owner/Staff Questions
@@ -73,4 +82,4 @@ client.on('messageCreate', (message) => {
     }
 });
 
-client.login(process.env.TOKEN);
+client.login(TOKEN);
