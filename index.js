@@ -19,7 +19,7 @@ const client = new Client({
 });
 
 // Using your provided token
-const TOKEN = 'MTUwMTExODAyMTc5ODg1NDY3Ng.GLtRjl.eS9atXhmQnymnUHLhgbHO3nWDZPjfw5MAKAI7I';
+const TOKEN = 'MTUwMTExODAyMTc5ODg1NDY3Ng.GPm5zb._24Aek6dop_BV0qw9Sj7U-_Ets8oLIEgCXINJs';
 
 client.once('ready', () => {
     console.log('✅ Mythical Core is now online and listening for doubts!');
