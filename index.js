@@ -1,11 +1,12 @@
-const { Client, GatewayIntentBits, EmbedBuilder, Partials } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, Partials, ActivityType } = require('discord.js');
 const http = require('http');
 
-// --- RENDER PORT BINDING FIX ---
+// --- PERMANENT SERVER BINDING ---
+// Port 3000 is standard for Heaven Cloud/Local hosting
 http.createServer((req, res) => {
     res.write("Mythical Core is Online");
     res.end();
-}).listen(10000); 
+}).listen(process.env.PORT || 3000); 
 
 const client = new Client({
     intents: [
@@ -18,68 +19,67 @@ const client = new Client({
     partials: [Partials.Channel, Partials.Message, Partials.User] 
 });
 
-// Using your provided token
 const TOKEN = 'MTUwMTExODAyMTc5ODg1NDY3Ng.GPm5zb._24Aek6dop_BV0qw9Sj7U-_Ets8oLIEgCXINJs';
 
+// Configuration: Replace with your actual Channel ID for public join messages
+const WELCOME_CHANNEL_ID = 'YOUR_CHANNEL_ID_HERE'; 
+
 client.once('ready', () => {
-    console.log('✅ Mythical Core is now online and listening for doubts!');
-    // Setting status to the temporary IP so everyone sees it
-    client.user.setActivity('ind1.softhost.in:19144', { type: 3 }); 
+    console.log('✅ Mythical Core (V2.0) is online!');
+    client.user.setActivity('play.vexsmp.online', { type: ActivityType.Playing }); 
 });
 
-// --- DM WELCOME FEATURE ---
+// --- NEW: AUTO-MODERATION & JOIN FEATURE ---
 client.on('guildMemberAdd', async (member) => {
+    // 1. Send Private DM (Existing)
     try {
         const welcomeEmbed = new EmbedBuilder()
             .setColor('#00fbff')
-            .setTitle('🔥 Successfully Joined Mythical Network!')
-            .setDescription(`Hey ${member.user.username}, welcome to the family!`)
-            .addFields(
-                { name: '🌐 Temporary IP', value: '`ind1.softhost.in`' },
-                { name: '🔌 Port', value: '`19144`' },
-                { name: '📅 Launch Status', value: 'VEX SMP IS LIVE!' },
-                { name: '🎁 Rewards', value: 'Be one of the first 40 players to join for the Pioneer rewards!' }
-            )
+            .setTitle('🔥 Joined Mythical Network!')
+            .setDescription(`Hey ${member.user.username}, welcome! IP: play.vexsmp.online`)
             .setFooter({ text: 'Mythical Studios Logic' });
-
         await member.send({ embeds: [welcomeEmbed] });
-        console.log(`✅ Sent welcome DM to ${member.user.tag}`);
-    } catch (err) {
-        console.log(`❌ Could not DM ${member.user.tag}.`);
+    } catch (err) { console.log("User has DMs off."); }
+
+    // 2. Send Public Join Message (New)
+    const channel = member.guild.channels.cache.get(WELCOME_CHANNEL_ID);
+    if (channel) {
+        channel.send(`🚀 **${member.user.username}** just landed in Mythical Network! No staff online? Ask me anything!`);
     }
 });
 
-// --- SMART DOUBT CLEARER ---
+// --- SMART AUTO-REPLY & CLIENT FIXES ---
 client.on('messageCreate', (message) => {
     if (message.author.bot) return;
-
     const msg = message.content.toLowerCase();
 
-    // 1. IP Questions (Updated for Temporary IP)
-    if (msg.includes('how to join') || msg.includes('ip') || msg.includes('address')) {
-        return message.reply('Current Temporary IP: `ind1.softhost.in` | Port: `19144`. Use this until the main domain finishes updating!');
+    // --- CLIENT SIDE SOLUTIONS ---
+    if (msg.includes('lag') || msg.includes('fps')) {
+        return message.reply('**Client Fix:** Install **Sodium** and **Lithium** (Fabric) or use **Optifine**. Set your render distance to 8 chunks for better FPS!');
+    }
+    
+    if (msg.includes('connection') || msg.includes('timed out') || msg.includes('io.netty')) {
+        return message.reply('**Connection Fix:** \n1. Restart your Minecraft. \n2. Check if your Firewall is blocking Java. \n3. Use IP: `165.99.53.228:19144` if the domain is slow.');
     }
 
-    // 2. Owner/Staff Questions
-    if (msg.includes('owner') || msg.includes('founder') || msg.includes('staff')) {
-        return message.reply('The Mythical Network is owned by **Chethan**. Our Lead Admins are **Thaman** and **Pavan** (The Friends Council).');
+    if (msg.includes('crash') || msg.includes('not opening')) {
+        return message.reply('**Launch Fix:** Ensure you are using **Java 17 or 21** for Minecraft 1.20+. Also, check your `.minecraft/logs` folder for the error!');
     }
 
-    // 3. Store Questions
-    if (msg.includes('buy') || msg.includes('store') || msg.includes('rank')) {
-        return message.reply('Check out our ranks at: `store.mythicalstudios.online` (Wait for DNS update if link is slow!)');
+    // --- AUTO-MODERATION (NO STAFF ACTION) ---
+    const badWords = ['hack', 'cheat', 'xray']; // Add your own list
+    if (badWords.some(word => msg.includes(word))) {
+        message.delete();
+        return message.channel.send(`🚫 **Auto-Mod:** ${message.author}, discussing cheats is strictly forbidden. This incident has been logged.`);
     }
 
-    // 4. Status/Help
-    if (msg === '!help' || msg.includes('help me')) {
-        const helpEmbed = new EmbedBuilder()
-            .setColor('#00fbff')
-            .setTitle('Mythical Core | Assistance')
-            .setDescription('I can help with the **IP**, **Staff**, **Store**, or **Launch** info.')
-            .addFields({ name: 'Current IP', value: '`ind1.softhost.in:19144`' })
-            .setFooter({ text: 'Mythical Studios Logic' });
-        
-        message.reply({ embeds: [helpEmbed] });
+    // --- GENERAL INFO ---
+    if (msg.includes('ip') || msg.includes('join')) {
+        return message.reply('**IP:** `play.vexsmp.online` | **Port:** `19144`');
+    }
+
+    if (msg.includes('owner') || msg.includes('staff')) {
+        return message.reply('Owner: **Chethan** | Admins: **Thaman** & **Pavan**. Open a ticket if you need urgent help!');
     }
 });
 
