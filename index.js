@@ -2,7 +2,6 @@ const { Client, GatewayIntentBits, EmbedBuilder, Partials } = require('discord.j
 const http = require('http');
 
 // --- RENDER PORT BINDING FIX ---
-// This creates a tiny server so Render sees an "Open Port" and doesn't kill the bot.
 http.createServer((req, res) => {
     res.write("Mythical Core is Online");
     res.end();
@@ -19,13 +18,13 @@ const client = new Client({
     partials: [Partials.Channel, Partials.Message, Partials.User] 
 });
 
-// IMPORTANT: Ensure your Token is set in the Render "Environment Variables" 
-// or replace process.env.TOKEN with your string safely.
-const TOKEN = process.env.TOKEN || 'MTUwMTExODAyMTc5ODg1NDY3Ng.GLtRjl.eS9atXhmQnymnUHLhgbHO3nWDZPjfw5MAKAI7I';
+// Using your provided token
+const TOKEN = 'MTUwMTExODAyMTc5ODg1NDY3Ng.GLtRjl.eS9atXhmQnymnUHLhgbHO3nWDZPjfw5MAKAI7I';
 
 client.once('ready', () => {
     console.log('✅ Mythical Core is now online and listening for doubts!');
-    client.user.setActivity('play.vexsmp.online', { type: 3 }); 
+    // Setting status to the temporary IP so everyone sees it
+    client.user.setActivity('ind1.softhost.in:19144', { type: 3 }); 
 });
 
 // --- DM WELCOME FEATURE ---
@@ -36,16 +35,17 @@ client.on('guildMemberAdd', async (member) => {
             .setTitle('🔥 Successfully Joined Mythical Network!')
             .setDescription(`Hey ${member.user.username}, welcome to the family!`)
             .addFields(
-                { name: '🌐 Server IP', value: '`play.vexsmp.online`' },
-                { name: '📅 Launch Date', value: 'May 6th, 11:00 AM IST' },
-                { name: '🎁 Rewards', value: 'Type `!rewards` in the server to see what you can win!' }
+                { name: '🌐 Temporary IP', value: '`ind1.softhost.in`' },
+                { name: '🔌 Port', value: '`19144`' },
+                { name: '📅 Launch Status', value: 'VEX SMP IS LIVE!' },
+                { name: '🎁 Rewards', value: 'Be one of the first 40 players to join for the Pioneer rewards!' }
             )
-            .setFooter({ text: 'Sent by Mythical Studios Logic' });
+            .setFooter({ text: 'Mythical Studios Logic' });
 
         await member.send({ embeds: [welcomeEmbed] });
         console.log(`✅ Sent welcome DM to ${member.user.tag}`);
     } catch (err) {
-        console.log(`❌ Could not DM ${member.user.tag} (Their DMs might be closed).`);
+        console.log(`❌ Could not DM ${member.user.tag}.`);
     }
 });
 
@@ -55,9 +55,9 @@ client.on('messageCreate', (message) => {
 
     const msg = message.content.toLowerCase();
 
-    // 1. IP Questions
+    // 1. IP Questions (Updated for Temporary IP)
     if (msg.includes('how to join') || msg.includes('ip') || msg.includes('address')) {
-        return message.reply('To join the Mythical Network, use the IP: `play.vexsmp.online`. If you are on Bedrock/Mobile, use the same IP with port `19132`!');
+        return message.reply('Current Temporary IP: `ind1.softhost.in` | Port: `19144`. Use this until the main domain finishes updating!');
     }
 
     // 2. Owner/Staff Questions
@@ -67,7 +67,7 @@ client.on('messageCreate', (message) => {
 
     // 3. Store Questions
     if (msg.includes('buy') || msg.includes('store') || msg.includes('rank')) {
-        return message.reply('You can check out our ranks and support the server at: `store.mythicalstudios.online`');
+        return message.reply('Check out our ranks at: `store.mythicalstudios.online` (Wait for DNS update if link is slow!)');
     }
 
     // 4. Status/Help
@@ -75,7 +75,8 @@ client.on('messageCreate', (message) => {
         const helpEmbed = new EmbedBuilder()
             .setColor('#00fbff')
             .setTitle('Mythical Core | Assistance')
-            .setDescription('I can answer questions about the **IP**, **Owner**, **Store**, or **Launch**. Just ask me naturally!')
+            .setDescription('I can help with the **IP**, **Staff**, **Store**, or **Launch** info.')
+            .addFields({ name: 'Current IP', value: '`ind1.softhost.in:19144`' })
             .setFooter({ text: 'Mythical Studios Logic' });
         
         message.reply({ embeds: [helpEmbed] });
